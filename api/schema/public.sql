@@ -44,6 +44,7 @@ create table if not exists public.tasks (
 );
 
 alter table public.tasks add column completed_at timestamp without time zone;
+alter table public.tasks add column due_date timestamp without time zone;
 
 comment on table public.tasks is E'@omit update,delete';
 comment on column public.tasks.created_at is E'@omit create';

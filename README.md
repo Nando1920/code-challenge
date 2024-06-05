@@ -8,9 +8,9 @@ Add due dates to tasks.
 ### Steps
 Here's a rough guide for what you need to do:
 
-- [ ] On the repo on GitHub.com, click `Use this template`, then `Create a new 
+- [X] On the repo on GitHub.com, click `Use this template`, then `Create a new 
   repository` to create your own version of this project.
-- [ ] Add a due date column to the `tasks` table. This should be non-destructive, so 
+- [X] Add a due date column to the `tasks` table. This should be non-destructive, so 
   don't drop the table.
 - [ ] Add a date picker (any will do, as long as it fits the look of the app) to the
   task input according to the design.

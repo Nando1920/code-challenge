@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import css from './style.module.scss';
 import cls from '../../_util/cls';
+import CalendarSvg from "../../_svg/Calendar.svg"
+import CalendarInput from '../Calendar';
 
 export default function Input ({
 	onFocusChange = () => {},
 	onSubmit = () => {},
 }) {
 	const [hasFocus, _setHasFocus] = useState(false);
+	const [open, _setOpen] = useState(false);
+
 
 	const setHasFocus = v => {
 		_setHasFocus(v);
@@ -55,6 +59,12 @@ export default function Input ({
 				onKeyPress={onKeyPress}
 				onPaste={onPaste}
 			/>
+			<img onClick={()=>{_setOpen(true); _setHasFocus(true);}} src={CalendarSvg} alt="Calendar" className={`cal ${cls(css.icon, {
+			[css.iconFocus]: hasFocus, 
+			
+		})}`}/>
+		<CalendarInput />
+		
 		</div>
 	);
 }
