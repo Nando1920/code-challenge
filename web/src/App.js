@@ -17,7 +17,7 @@ export default function App () {
 		query {
 			active: tasks (
 				filter: { complete: { equalTo: false } }
-				orderBy: [CREATED_AT_ASC]
+				orderBy: [DUE_DATE_ASC, CREATED_AT_DESC]
 			) {
 				nodes {
 					...Task
@@ -36,6 +36,8 @@ export default function App () {
 			id
 			text
 			complete
+			createdAt
+			dueDate
 		}
 	`);
 
@@ -85,8 +87,9 @@ export default function App () {
 		setBusy(false);
 	};
 
-	console.log(data)
 
+	
+console.log(data)
 	const renderTask = t => (
 		<Task
 			key={t.id}

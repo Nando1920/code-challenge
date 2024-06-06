@@ -54,20 +54,6 @@ export default function Input ({
 		<div className={cls(css.wrap, {
 			[css.focus]: hasFocus,
 		})}>
-			{dueDate && (
-                    <p
-                        style={{
-                            textTransform: 'capitalize',
-                            color: isDatePast(dueDate)
-                                ? 'red'
-                                : isDueToday(dueDate)
-                                ? 'green'
-                                : 'purple',
-                        }}
-                    >
-                        {formatRelative(new Date(dueDate), new Date())}
-                    </p>
-                )}
 			<textarea
 				rows={1}
 				className={css.input}
@@ -95,7 +81,6 @@ export default function Input ({
                         position: 'absolute',
                         top: '100%',
                         left: 0,
-                        // display: 'none',
                         height: 0,
                         opacity: 0,
                     }}
