@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import css from './style.module.scss';
 import cls from '../../_util/cls';
-import CalendarSvg from "../../_svg/Calendar.svg"
 
 export default function Input ({
 	onFocusChange = () => {},
@@ -47,6 +46,8 @@ export default function Input ({
 		onInput(e);
 	};
 
+	const setDate = (date) => _setDueDate(date !== ''? date : null)
+
 	return (
 		<div className={cls(css.wrap, {
 			[css.focus]: hasFocus,
@@ -62,37 +63,40 @@ export default function Input ({
 				onPaste={onPaste}
 			/>
 			<div className={css.iconContainer}>
-			<img onClick={()=>{ 
-				_setHasFocus(true);
-				if (openCal) {
-                    dateRef.current?.focus();
-                    dateRef.current?.showPicker();
-                }
-                _setOpenCal(!openCal);}} 
-				src={CalendarSvg} 
-				alt="Calendar" 
-				className={`cal ${cls(css.icon, {[css.iconFocus]: hasFocus,})}`}/>
-			<input
-                ref={dateRef}
-                type="datetime-local"
-                style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                height: 0,
-                opacity: 0,
-                }}
-                onChange={(e) => {
-					console.log(e.target.value)
-                    _setDueDate(e.target.value)
-                }}
-                onBlur={(e) => {
-                    _setOpenCal(true)
-                    _setDueDate(e.target.value)
-                }}
-                />
+				
+				<div onClick={()=>{ 
+					_setHasFocus(true);
+					if (openCal) {
+						dateRef.current?.focus();
+						dateRef.current?.showPicker();
+					}
+					_setOpenCal(!openCal);}} 
+					
+					className={cls(css.icon, {[css.iconFocus]: hasFocus,})}
+				>
+					<div className={cls(css.iconImg, {[css.iconImgFocus]: hasFocus,})}/>
 				</div>
-		
+				
+				
+				<input
+					ref={dateRef}
+					type="datetime-local"
+					style={{
+					position: 'absolute',
+					top: '100%',
+					left: 0,
+					height: 0,
+					opacity: 0,
+					}}
+					onChange={(e) => {
+						setDate(e.target.value)
+					}}
+					onBlur={(e) => {
+						_setOpenCal(true)
+						setDate(e.target.value)
+					}}
+				/>
+			</div>
 		</div>
 	);
 }

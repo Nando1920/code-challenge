@@ -37,10 +37,21 @@
 
 .iconContainer{
 	position: absolute;
-	right: 2%;
+	right: 0%;
 	top: 15%;
 	display: flex;
 	flex-direction: column;
+}
+
+.iconImg{
+	height: size(24px);
+	width: size(24px);
+	filter: grayscale(100%);
+	background-image: url(../../_svg/Calendar.svg);
+}
+
+.iconImgFocus{
+	filter: brightness(100%);
 }
 
 .icon{
@@ -48,9 +59,11 @@
 	padding: size(12);
 	border-radius: size(10);
 	fill: #5a5a5a;
-	
+	vertical-align: middle;	
+	margin: -1px 10px 0 0;
 }
 
 .iconFocus{
-	background-color: #B59BFF;
+	fill: $primary;
+	background-color: $primary-light;
 }

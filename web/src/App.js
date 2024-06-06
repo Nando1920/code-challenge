@@ -17,7 +17,7 @@ export default function App () {
 		query {
 			active: tasks (
 				filter: { complete: { equalTo: false } }
-				orderBy: [DUE_DATE_ASC, CREATED_AT_DESC]
+				orderBy: [DUE_DATE_ASC, CREATED_AT_ASC]
 			) {
 				nodes {
 					...Task
