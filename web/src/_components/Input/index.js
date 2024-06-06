@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import css from './style.module.scss';
 import cls from '../../_util/cls';
+import {isDatePast,isDueToday} from '../../_util/date';
 import CalendarSvg from "../../_svg/Calendar.svg"
-import CalendarInput from '../Calendar';
+import {formatRelative} from "date-fns"
 
 export default function Input ({
 	onFocusChange = () => {},
@@ -10,6 +11,9 @@ export default function Input ({
 }) {
 	const [hasFocus, _setHasFocus] = useState(false);
 	const [open, _setOpen] = useState(false);
+	const dateRef = useRef(null);
+	const [openCal, _setOpenCal] = useState(true);
+	const [dueDate, _setDueDate] = useState(null);
 
 
 	const setHasFocus = v => {
@@ -31,8 +35,9 @@ export default function Input ({
 			return;
 
 		e.preventDefault();
-		await onSubmit(e.target.value);
+		await onSubmit(e.target.value, dueDate);
 		e.target.value = '';
+		_setDueDate(null)
 		onInput(e);
 		e.target.blur();
 	};
@@ -49,6 +54,20 @@ export default function Input ({
 		<div className={cls(css.wrap, {
 			[css.focus]: hasFocus,
 		})}>
+			{dueDate && (
+                    <p
+                        style={{
+                            textTransform: 'capitalize',
+                            color: isDatePast(dueDate)
+                                ? 'red'
+                                : isDueToday(dueDate)
+                                ? 'green'
+                                : 'purple',
+                        }}
+                    >
+                        {formatRelative(new Date(dueDate), new Date())}
+                    </p>
+                )}
 			<textarea
 				rows={1}
 				className={css.input}
@@ -59,11 +78,36 @@ export default function Input ({
 				onKeyPress={onKeyPress}
 				onPaste={onPaste}
 			/>
-			<img onClick={()=>{_setOpen(true); _setHasFocus(true);}} src={CalendarSvg} alt="Calendar" className={`cal ${cls(css.icon, {
+			<div className={css.iconContainer}>
+			<img onClick={()=>{_setOpen(true); _setHasFocus(true);if (openCal) {
+                            dateRef.current?.focus();
+                            dateRef.current?.showPicker();
+                        }
+                        _setOpenCal(!openCal);}} 
+						src={CalendarSvg} alt="Calendar" className={`cal ${cls(css.icon, {
 			[css.iconFocus]: hasFocus, 
 			
 		})}`}/>
-		<CalendarInput />
+		<input
+                    ref={dateRef}
+                    type="datetime-local"
+                    style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        // display: 'none',
+                        height: 0,
+                        opacity: 0,
+                    }}
+                    onChange={(e) => {
+                        console.log(e.target.value)
+                    }}
+                    onBlur={(e) => {
+                        _setOpenCal(true)
+                        _setDueDate(e.target.value)
+                    }}
+                />
+				</div>
 		
 		</div>
 	);

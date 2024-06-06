@@ -40,8 +40,8 @@ export default function App () {
 	`);
 
 	const [create] = useMutation(gql`
-		mutation Create ($text: String!) {
-			createTask (input: { task: { text: $text } }) {
+		mutation Create ($text: String!, $dueDate: Datetime) {
+			createTask (input: { task: { text: $text , dueDate: $dueDate } }) {
 				clientMutationId
 			}
 		}
@@ -63,10 +63,11 @@ export default function App () {
 		}
 	`);
 
-	const onSubmit = async text => {
+	const onSubmit = async (text,dueDate) => {
+		console.log(text,dueDate)
 		setBusy(true);
 		await create({
-			variables: { text },
+			variables: { text, dueDate },
 			optimisticResponse: {
 				__typename: 'Mutation',
 				createTask: {
@@ -75,6 +76,7 @@ export default function App () {
 					text,
 					complete: false,
 					createdAt: Date.now(),
+					dueDate: dueDate,
 				},
 			},
 		});
@@ -83,10 +85,13 @@ export default function App () {
 		setBusy(false);
 	};
 
+	console.log(data)
+
 	const renderTask = t => (
 		<Task
 			key={t.id}
 			text={t.text}
+			dueDate={t.dueDate}
 			complete={t.complete}
 			onChange={async checked => {
 				setBusy(true);

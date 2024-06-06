@@ -84,3 +84,25 @@
 		background-size: 100% size(2);
 	}
 }
+
+.textContainer{
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+.dateText{
+	font-size: size(14px);
+}
+
+.overdue{
+	color: #FF6B5E;
+}
+
+.upcoming{
+	color: #B59BFF;
+}
+
+.soon{
+	color: #5BD8D6;
+}
