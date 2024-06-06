@@ -1,16 +1,13 @@
 import { useState, useRef } from 'react';
 import css from './style.module.scss';
 import cls from '../../_util/cls';
-import {isDatePast,isDueToday} from '../../_util/date';
 import CalendarSvg from "../../_svg/Calendar.svg"
-import {formatRelative} from "date-fns"
 
 export default function Input ({
 	onFocusChange = () => {},
 	onSubmit = () => {},
 }) {
 	const [hasFocus, _setHasFocus] = useState(false);
-	const [open, _setOpen] = useState(false);
 	const dateRef = useRef(null);
 	const [openCal, _setOpenCal] = useState(true);
 	const [dueDate, _setDueDate] = useState(null);
@@ -65,32 +62,34 @@ export default function Input ({
 				onPaste={onPaste}
 			/>
 			<div className={css.iconContainer}>
-			<img onClick={()=>{_setOpen(true); _setHasFocus(true);if (openCal) {
-                            dateRef.current?.focus();
-                            dateRef.current?.showPicker();
-                        }
-                        _setOpenCal(!openCal);}} 
-						src={CalendarSvg} alt="Calendar" className={`cal ${cls(css.icon, {
-			[css.iconFocus]: hasFocus, 
-			
-		})}`}/>
-		<input
-                    ref={dateRef}
-                    type="datetime-local"
-                    style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        height: 0,
-                        opacity: 0,
-                    }}
-                    onChange={(e) => {
-                        console.log(e.target.value)
-                    }}
-                    onBlur={(e) => {
-                        _setOpenCal(true)
-                        _setDueDate(e.target.value)
-                    }}
+			<img onClick={()=>{ 
+				_setHasFocus(true);
+				if (openCal) {
+                    dateRef.current?.focus();
+                    dateRef.current?.showPicker();
+                }
+                _setOpenCal(!openCal);}} 
+				src={CalendarSvg} 
+				alt="Calendar" 
+				className={`cal ${cls(css.icon, {[css.iconFocus]: hasFocus,})}`}/>
+			<input
+                ref={dateRef}
+                type="datetime-local"
+                style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                height: 0,
+                opacity: 0,
+                }}
+                onChange={(e) => {
+					console.log(e.target.value)
+                    _setDueDate(e.target.value)
+                }}
+                onBlur={(e) => {
+                    _setOpenCal(true)
+                    _setDueDate(e.target.value)
+                }}
                 />
 				</div>
 		
