@@ -37,7 +37,7 @@ export default function Task ({
 			<div className={css.textContainer}>
 				<span className={css.text}>{text}</span>
 				{!complete && dueDate && 
-					<span className={cls(css.dateText,{[css.overdue]:overdue,},{[css.upcoming]:!dueToday&&!overdue},{[css.soon]:dueToday})}>
+					<span className={cls(css.dateText,{[css.overdue]:overdue,},{[css.upcoming]:!dueToday&&!overdue},{[css.soon]:dueToday && !overdue})}>
 						{formatRelative(new Date(dueDate), new Date())}
 					</span>
 				}	
