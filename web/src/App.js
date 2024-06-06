@@ -66,7 +66,6 @@ export default function App () {
 	`);
 
 	const onSubmit = async (text,dueDate) => {
-		console.log(text,dueDate)
 		setBusy(true);
 		await create({
 			variables: { text, dueDate },
@@ -89,7 +88,6 @@ export default function App () {
 
 
 	
-console.log(data)
 	const renderTask = t => (
 		<Task
 			key={t.id}

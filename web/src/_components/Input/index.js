@@ -33,6 +33,7 @@ export default function Input ({
 		e.preventDefault();
 		await onSubmit(e.target.value, dueDate);
 		e.target.value = '';
+		dateRef.current.value = '';
 		_setDueDate(null)
 		onInput(e);
 		e.target.blur();
@@ -47,7 +48,6 @@ export default function Input ({
 	};
 
 	const setDate = (date) => _setDueDate(date !== ''? date : null)
-
 	return (
 		<div className={cls(css.wrap, {
 			[css.focus]: hasFocus,
