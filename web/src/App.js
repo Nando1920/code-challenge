@@ -1,29 +1,37 @@
-import { useState } from 'react';
-import Task from './_components/Task';
-import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion';
-import Wrap from './_components/Wrap';
-import Header from './_components/Header';
-import Input from './_components/Input';
-import Empty from './_components/Empty';
-import SubHeader from './_components/SubHeader';
-import { gql, useMutation, useQuery } from '@apollo/client';
-import Spin from './_components/Spin';
+import { useState } from "react";
+import Task from "./_components/Task";
+import {
+	AnimatePresence,
+	AnimateSharedLayout,
+	motion,
+	Reorder,
+} from "framer-motion/dist/framer-motion";
+import Wrap from "./_components/Wrap";
+import Header from "./_components/Header";
+import Input from "./_components/Input";
+import Empty from "./_components/Empty";
+import SubHeader from "./_components/SubHeader";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import Spin from "./_components/Spin";
+import cls from "./_util/cls";
 
-export default function App () {
-	const [hasFocus, setHasFocus] = useState(false)
-		, [busy, setBusy] = useState(false);
+export default function App() {
+	const [hasFocus, setHasFocus] = useState(false),
+		[busy, setBusy] = useState(false);
 
 	const { data, loading, error, refetch } = useQuery(gql`
 		query {
-			active: tasks (
+			active: tasks(
 				filter: { complete: { equalTo: false } }
 				orderBy: [DUE_DATE_ASC, CREATED_AT_ASC]
 			) {
 				nodes {
 					...Task
+					createdAt
+					dueDate
 				}
 			}
-			complete: tasks (
+			complete: tasks(
 				filter: { complete: { equalTo: true } }
 				orderBy: [COMPLETED_AT_ASC]
 			) {
@@ -36,43 +44,41 @@ export default function App () {
 			id
 			text
 			complete
-			createdAt
-			dueDate
 		}
 	`);
 
 	const [create] = useMutation(gql`
-		mutation Create ($text: String!, $dueDate: Datetime) {
-			createTask (input: { task: { text: $text , dueDate: $dueDate } }) {
+		mutation Create($text: String!, $dueDate: Datetime) {
+			createTask(input: { task: { text: $text, dueDate: $dueDate } }) {
 				clientMutationId
 			}
 		}
 	`);
 
 	const [complete] = useMutation(gql`
-		mutation Complete ($id: UUID!) {
-			complete (input: { id: $id }) {
+		mutation Complete($id: UUID!) {
+			complete(input: { id: $id }) {
 				clientMutationId
 			}
 		}
 	`);
 
 	const [uncomplete] = useMutation(gql`
-		mutation Uncomplete ($id: UUID!) {
-			uncomplete (input: { id: $id }) {
+		mutation Uncomplete($id: UUID!) {
+			uncomplete(input: { id: $id }) {
 				clientMutationId
 			}
 		}
 	`);
 
-	const onSubmit = async (text,dueDate) => {
+	const onSubmit = async (text, dueDate) => {
 		setBusy(true);
 		await create({
 			variables: { text, dueDate },
 			optimisticResponse: {
-				__typename: 'Mutation',
+				__typename: "Mutation",
 				createTask: {
-					__typename: 'Task',
+					__typename: "Task",
 					id: Math.random(),
 					text,
 					complete: false,
@@ -86,39 +92,36 @@ export default function App () {
 		setBusy(false);
 	};
 
-
-	
-	const renderTask = t => (
+	const renderTask = (t) => (
 		<Task
 			key={t.id}
 			text={t.text}
 			dueDate={t.dueDate}
 			complete={t.complete}
-			onChange={async checked => {
+			onChange={async (checked) => {
 				setBusy(true);
 				if (checked) {
 					await complete({
 						variables: { id: t.id },
 						optimisticResponse: {
-							__typename: 'Mutation',
+							__typename: "Mutation",
 							complete: {
 								...t,
-								__typename: 'Task',
+								__typename: "Task",
 								complete: true,
-							}
+							},
 						},
 					});
-				}
-				else {
+				} else {
 					await uncomplete({
 						variables: { id: t.id },
 						optimisticResponse: {
-							__typename: 'Mutation',
+							__typename: "Mutation",
 							uncomplete: {
 								...t,
-								__typename: 'Task',
+								__typename: "Task",
 								complete: false,
-							}
+							},
 						},
 					});
 				}
@@ -130,8 +133,12 @@ export default function App () {
 		/>
 	);
 
-	const activeTasks = data && data.active ? data.active.nodes : []
-		, completeTasks = data && data.complete ? data.complete.nodes: [];
+	const reOrderTask = (tasks) => {
+		console.log(tasks);
+	};
+
+	const activeTasks = data && data.active ? data.active.nodes : [],
+		completeTasks = data && data.complete ? data.complete.nodes : [];
 
 	const hasTasks = activeTasks.length + completeTasks.length > 0;
 
@@ -143,10 +150,7 @@ export default function App () {
 				<p>List of pre-launch tasks for my big project.</p>
 			</Header>
 
-			<Input
-				onSubmit={onSubmit}
-				onFocusChange={setHasFocus}
-			/>
+			<Input onSubmit={onSubmit} onFocusChange={setHasFocus} />
 
 			<AnimatePresence>
 				{error && (
@@ -158,10 +162,10 @@ export default function App () {
 
 			<AnimateSharedLayout>
 				<motion.div
-					animate={hasFocus ? 'from' : 'to'}
+					animate={hasFocus ? "from" : "to"}
 					variants={{
 						from: { opacity: 0.4 },
-						to:   { opacity: 1 },
+						to: { opacity: 1 },
 					}}
 				>
 					<AnimatePresence>
@@ -179,12 +183,22 @@ export default function App () {
 							</Empty>
 						)}
 					</AnimatePresence>
-					{activeTasks.map(renderTask)}
+
+					<Reorder.Group values={activeTasks} onReorder={reOrderTask}>
+						{activeTasks.map((e) => {
+							return (
+								<Reorder.Item
+									value={e}
+									className={cls("listItem")}
+								>
+									{renderTask(e)}
+								</Reorder.Item>
+							);
+						})}
+					</Reorder.Group>
 
 					<AnimatePresence>
-						{hasTasks && (
-							<SubHeader>Completed Tasks</SubHeader>
-						)}
+						{hasTasks && <SubHeader>Completed Tasks</SubHeader>}
 					</AnimatePresence>
 					{completeTasks.map(renderTask)}
 					<AnimatePresence>
