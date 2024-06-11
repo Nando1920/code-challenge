@@ -113,13 +113,15 @@ drop trigger if exists set_created_at on public.tasks;
 create trigger set_created_at before insert on public.tasks for each row
   execute procedure trigger.set_created_at();
 
--- Created At
+-- Add Order Number
 -- -----------------------------------------------------------------------------
 
 create or replace function trigger.insert_task_order() returns trigger as $$
 begin
-  insert into public.tasks_order (id, order_num, task_id)
-  values (uuid_generate_v1mc(), (select coalesce(max(order_num), 0) + 1 from public.tasks_order), new.id);
+  if new.due_date is null then
+    insert into public.tasks_order (id, order_num, task_id)
+    values (uuid_generate_v1mc(), (select coalesce(max(order_num), 0) + 1 from public.tasks_order), new.id);
+  end if;
   return new;
 end;
 $$ language plpgsql volatile;
