@@ -52,6 +52,21 @@ comment on column public.tasks.completed_at is E'@omit create';
 
 grant all on table public.tasks to anonymous;
 
+-- Tasks Order
+-- -----------------------------------------------------------------------------
+
+
+create table if not exists public.tasks_order (
+  id        uuid primary key default public.uuid_generate_v1mc(),
+  order_num integer not null,
+  task_id   uuid not null references public.tasks(id)
+);
+
+
+comment on table public.tasks_order is E'@omit update,delete';
+grant all on table public.tasks_order to anonymous;
+
+
 
 -- Functions
 -- =============================================================================
@@ -97,3 +112,18 @@ $$ language plpgsql volatile;
 drop trigger if exists set_created_at on public.tasks;
 create trigger set_created_at before insert on public.tasks for each row
   execute procedure trigger.set_created_at();
+
+-- Created At
+-- -----------------------------------------------------------------------------
+
+create or replace function trigger.insert_task_order() returns trigger as $$
+begin
+  insert into public.tasks_order (id, order_num, task_id)
+  values (uuid_generate_v1mc(), (select coalesce(max(order_num), 0) + 1 from public.tasks_order), new.id);
+  return new;
+end;
+$$ language plpgsql volatile;
+
+drop trigger if exists insert_task_order on public.tasks;
+create trigger insert_task_order after insert on public.tasks for each row
+  execute procedure trigger.insert_task_order();
