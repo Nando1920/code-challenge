@@ -137,7 +137,6 @@ export default function App() {
 	};
 
 	const reOrderTask = (tasks) => {
-		console.log(tasks);
 		const tastsWithDate = activeTasks.filter((e) => {
 			return e.dueDate;
 		});

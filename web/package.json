@@ -4,6 +4,7 @@
 	"private": true,
 	"dependencies": {
 		"@apollo/client": "^3.3.11",
+		"@craco/craco": "^6.0.0",
 		"date-fns": "^2.0.0",
 		"framer-motion": "^6.4.1",
 		"graphql": "^15.5.0",
@@ -13,7 +14,7 @@
 		"react-scripts": "^4.0.3"
 	},
 	"scripts": {
-		"start": "react-scripts start",
+		"start": "craco start",
 		"build": "react-scripts build"
 	},
 	"eslintConfig": {
@@ -21,7 +22,6 @@
 			"react-app"
 		]
 	},
-	"type": "module",
 	"browserslist": {
 		"production": [
 			">0.2%",
