@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Task from "./_components/Task";
 import {
 	AnimatePresence,
@@ -17,7 +17,9 @@ import cls from "./_util/cls";
 
 export default function App() {
 	const [hasFocus, setHasFocus] = useState(false),
-		[busy, setBusy] = useState(false);
+		[busy, setBusy] = useState(false),
+		[activeTasks, setActiveTasks] = useState([]),
+		[orderedTasks, setOrderedTasks] = useState([]);
 
 	const { data, loading, error, refetch } = useQuery(gql`
 		query {
@@ -72,12 +74,18 @@ export default function App() {
 	`);
 
 	const [reorder] = useMutation(gql`
-		mutation Reorder($orders: UpdateTaskOrdersInput!) {
-			updateTaskOrders(input: $orders) {
+		mutation Reorder($orders: [OrderObjectInput]!) {
+			updateTaskOrders(input: { orders: $orders }) {
 				clientMutationId
 			}
 		}
 	`);
+
+	useEffect(() => {
+		if (data && data.active) {
+			setActiveTasks(data.active.nodes);
+		}
+	}, [data]);
 
 	const onSubmit = async (text, dueDate) => {
 		setBusy(true);
@@ -100,23 +108,28 @@ export default function App() {
 		setBusy(false);
 	};
 
-	const reOrderTask = async (tasks) => {
-		const orders = tasks.map((e, index) => {
-			console.log(index);
-			return { id: e.id, order_num: index + 1 };
+	const reOrderTask = (tasks) => {
+		console.log(tasks);
+		const tastsWithDate = activeTasks.filter((e) => {
+			return e.dueDate;
 		});
-		console.log(orders);
+		setActiveTasks([...tastsWithDate, ...tasks]);
+		setOrderedTasks(tasks);
+	};
+
+	const onDragEnd = async () => {
+		const orders = orderedTasks.map((e, index) => {
+			return { id: e.id, orderNum: index + 1 };
+		});
 		reorder({
 			variables: { orders },
 			optimisticResponse: {
 				__typename: "Mutation",
 				update_task_orders: {
-					orders,
-					__typename: "UpdateTaskOrdersInput",
+					orders: orders,
 				},
 			},
 		});
-		// await refetch();
 	};
 
 	const renderTask = (t) => (
@@ -160,8 +173,7 @@ export default function App() {
 		/>
 	);
 
-	const activeTasks = data && data.active ? data.active.nodes : [],
-		completeTasks = data && data.complete ? data.complete.nodes : [];
+	const completeTasks = data && data.complete ? data.complete.nodes : [];
 
 	const hasTasks = activeTasks.length + completeTasks.length > 0;
 
@@ -215,6 +227,7 @@ export default function App() {
 										key={index}
 										value={e}
 										className={cls("listItem")}
+										onDragEnd={onDragEnd}
 									>
 										{renderTask(e)}
 									</Reorder.Item>
