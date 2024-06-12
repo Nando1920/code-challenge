@@ -74,7 +74,9 @@ create or replace function public.complete (id uuid) returns void as $$
   update public.tasks
   set complete = true,
       completed_at = 'now'
-  where id = $1
+  where id = $1;
+  delete from public.tasks_order
+  where task_id = $1;
 $$ language sql volatile;
 
 grant execute on function public.complete (uuid) to anonymous;
@@ -86,7 +88,9 @@ create or replace function public.uncomplete (id uuid) returns void as $$
   update public.tasks
   set complete = false,
       completed_at = null
-  where id = $1
+  where id = $1;
+  insert into public.tasks_order (id, order_num, task_id)
+  values (uuid_generate_v1mc(), (select coalesce(max(order_num), 0) + 1 from public.tasks_order), $1);
 $$ language sql volatile;
 
 grant execute on function public.uncomplete (uuid) to anonymous;

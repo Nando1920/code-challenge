@@ -29,8 +29,12 @@ export default function App() {
 			) {
 				nodes {
 					...Task
-					createdAt
 					dueDate
+					tasksOrders {
+						nodes {
+							orderNum
+						}
+					}
 				}
 			}
 			complete: tasks(
@@ -42,6 +46,7 @@ export default function App() {
 				}
 			}
 		}
+
 		fragment Task on Task {
 			id
 			text
@@ -82,8 +87,31 @@ export default function App() {
 	`);
 
 	useEffect(() => {
+		function sortTasks(tasks) {
+			const withDueDates = tasks.filter((task) => task.dueDate !== null);
+			const withoutDueDates = tasks.filter(
+				(task) => task.dueDate === null
+			);
+
+			withoutDueDates.sort((a, b) => {
+				const orderA =
+					a.tasksOrders.nodes.length > 0
+						? a.tasksOrders.nodes[0].orderNum
+						: Infinity;
+				const orderB =
+					b.tasksOrders.nodes.length > 0
+						? b.tasksOrders.nodes[0].orderNum
+						: Infinity;
+				return orderA - orderB;
+			});
+
+			const sortedTasks = [...withDueDates, ...withoutDueDates];
+
+			return sortedTasks;
+		}
+
 		if (data && data.active) {
-			setActiveTasks(data.active.nodes);
+			setActiveTasks(sortTasks(data.active.nodes));
 		}
 	}, [data]);
 
@@ -173,6 +201,31 @@ export default function App() {
 		/>
 	);
 
+	const reorderableList = () => (
+		<Reorder.Group values={activeTasks} onReorder={reOrderTask}>
+			{activeTasks.map((e, index) => {
+				if (!e.dueDate) {
+					return (
+						<Reorder.Item
+							key={index}
+							value={e}
+							className={cls("listItem")}
+							onDragEnd={onDragEnd}
+						>
+							{renderTask(e)}
+						</Reorder.Item>
+					);
+				} else {
+					return (
+						<div key={index} className={cls("listItem")}>
+							{renderTask(e)}
+						</div>
+					);
+				}
+			})}
+		</Reorder.Group>
+	);
+
 	const completeTasks = data && data.complete ? data.complete.nodes : [];
 
 	const hasTasks = activeTasks.length + completeTasks.length > 0;
@@ -219,31 +272,7 @@ export default function App() {
 						)}
 					</AnimatePresence>
 
-					<Reorder.Group values={activeTasks} onReorder={reOrderTask}>
-						{activeTasks.map((e, index) => {
-							if (!e.dueDate) {
-								return (
-									<Reorder.Item
-										key={index}
-										value={e}
-										className={cls("listItem")}
-										onDragEnd={onDragEnd}
-									>
-										{renderTask(e)}
-									</Reorder.Item>
-								);
-							} else {
-								return (
-									<div
-										key={index}
-										className={cls("listItem")}
-									>
-										{renderTask(e)}
-									</div>
-								);
-							}
-						})}
-					</Reorder.Group>
+					{reorderableList()}
 
 					<AnimatePresence>
 						{hasTasks && <SubHeader>Completed Tasks</SubHeader>}
