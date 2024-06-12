@@ -137,10 +137,11 @@ export default function App() {
 	};
 
 	const reOrderTask = (tasks) => {
-		const tastsWithDate = activeTasks.filter((e) => {
+		console.log(tasks);
+		const tasksWithDate = activeTasks.filter((e) => {
 			return e.dueDate;
 		});
-		setActiveTasks([...tastsWithDate, ...tasks]);
+		setActiveTasks([...tasksWithDate, ...tasks]);
 		setOrderedTasks(tasks);
 	};
 
@@ -206,7 +207,7 @@ export default function App() {
 				if (!e.dueDate) {
 					return (
 						<Reorder.Item
-							key={index}
+							key={e.id}
 							value={e}
 							className={cls("listItem")}
 							onDragEnd={onDragEnd}
