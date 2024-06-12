@@ -262,6 +262,12 @@ type Mutation {
     """
     input: UncompleteInput!
   ): UncompletePayload
+  updateTaskOrders(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskOrdersInput!
+  ): UpdateTaskOrdersPayload
 }
 
 """An object with a globally unique `ID`."""
@@ -270,6 +276,12 @@ interface Node {
   A globally unique identifier. Can be used in various places throughout the system to identify this single value.
   """
   nodeId: ID!
+}
+
+"""An input for mutations affecting `OrderObject`"""
+input OrderObjectInput {
+  id: UUID
+  orderNum: Int
 }
 
 """Information about pagination in a connection."""
@@ -994,6 +1006,30 @@ input UncompleteInput {
 
 """The output of our `uncomplete` mutation."""
 type UncompletePayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+}
+
+"""All input for the `updateTaskOrders` mutation."""
+input UpdateTaskOrdersInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  orders: [OrderObjectInput]
+}
+
+"""The output of our `updateTaskOrders` mutation."""
+type UpdateTaskOrdersPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
   unchanged and unused. May be used by a client to track mutations.

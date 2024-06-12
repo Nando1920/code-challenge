@@ -71,6 +71,14 @@ export default function App() {
 		}
 	`);
 
+	const [reorder] = useMutation(gql`
+		mutation Reorder($orders: UpdateTaskOrdersInput!) {
+			updateTaskOrders(input: $orders) {
+				clientMutationId
+			}
+		}
+	`);
+
 	const onSubmit = async (text, dueDate) => {
 		setBusy(true);
 		await create({
@@ -90,6 +98,25 @@ export default function App() {
 
 		await refetch();
 		setBusy(false);
+	};
+
+	const reOrderTask = async (tasks) => {
+		const orders = tasks.map((e, index) => {
+			console.log(index);
+			return { id: e.id, order_num: index + 1 };
+		});
+		console.log(orders);
+		reorder({
+			variables: { orders },
+			optimisticResponse: {
+				__typename: "Mutation",
+				update_task_orders: {
+					orders,
+					__typename: "UpdateTaskOrdersInput",
+				},
+			},
+		});
+		// await refetch();
 	};
 
 	const renderTask = (t) => (
@@ -132,10 +159,6 @@ export default function App() {
 			layoutId={t.id}
 		/>
 	);
-
-	const reOrderTask = (tasks) => {
-		console.log(tasks);
-	};
 
 	const activeTasks = data && data.active ? data.active.nodes : [],
 		completeTasks = data && data.complete ? data.complete.nodes : [];
@@ -185,15 +208,27 @@ export default function App() {
 					</AnimatePresence>
 
 					<Reorder.Group values={activeTasks} onReorder={reOrderTask}>
-						{activeTasks.map((e) => {
-							return (
-								<Reorder.Item
-									value={e}
-									className={cls("listItem")}
-								>
-									{renderTask(e)}
-								</Reorder.Item>
-							);
+						{activeTasks.map((e, index) => {
+							if (!e.dueDate) {
+								return (
+									<Reorder.Item
+										key={index}
+										value={e}
+										className={cls("listItem")}
+									>
+										{renderTask(e)}
+									</Reorder.Item>
+								);
+							} else {
+								return (
+									<div
+										key={index}
+										className={cls("listItem")}
+									>
+										{renderTask(e)}
+									</div>
+								);
+							}
 						})}
 					</Reorder.Group>
 

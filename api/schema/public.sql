@@ -55,18 +55,14 @@ grant all on table public.tasks to anonymous;
 -- Tasks Order
 -- -----------------------------------------------------------------------------
 
-
 create table if not exists public.tasks_order (
   id        uuid primary key default public.uuid_generate_v1mc(),
   order_num integer not null,
   task_id   uuid not null references public.tasks(id)
 );
 
-
 comment on table public.tasks_order is E'@omit update,delete';
 grant all on table public.tasks_order to anonymous;
-
-
 
 -- Functions
 -- =============================================================================
@@ -95,6 +91,26 @@ $$ language sql volatile;
 
 grant execute on function public.uncomplete (uuid) to anonymous;
 
+-- Reorder
+-- -----------------------------------------------------------------------------
+create type order_object as (
+    id uuid,
+    order_num integer
+);
+
+create or replace function public.update_task_orders(orders order_object[]) returns void as $$
+declare
+  item order_object;
+begin
+  foreach item in array orders loop
+    update public.tasks_order
+    set order_num = item.order_num
+    where task_id = item.id;
+  end loop;
+end;
+$$ language plpgsql;
+
+grant execute on function public.update_task_orders(order_object[]) to anonymous;
 
 -- Triggers
 -- =============================================================================
