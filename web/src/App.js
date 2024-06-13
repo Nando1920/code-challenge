@@ -212,6 +212,7 @@ export default function App() {
 				if (!e.dueDate) {
 					return (
 						<Reorder.Item
+							layout
 							key={e.id}
 							value={e}
 							className={cls("listItem")}
@@ -223,9 +224,13 @@ export default function App() {
 					);
 				} else {
 					return (
-						<div key={e.id} className={cls("listItem")}>
+						<motion.div
+							layout
+							key={e.id}
+							className={cls("listItem")}
+						>
 							{renderTask(e)}
-						</div>
+						</motion.div>
 					);
 				}
 			})}
