@@ -145,6 +145,10 @@ export default function App() {
 		setOrderedTasks(tasks);
 	};
 
+	const onDragStart = () => {
+		setIsDragged(true);
+	};
+
 	const onDragEnd = async () => {
 		const orders = orderedTasks.map((e, index) => {
 			return { id: e.id, orderNum: index + 1 };
@@ -167,12 +171,8 @@ export default function App() {
 			dueDate={t.dueDate}
 			complete={t.complete}
 			isDragged={isDragged}
+			setIsDragged={setIsDragged}
 			onChange={async (checked) => {
-				if (isDragged) {
-					setIsDragged(false);
-
-					return;
-				}
 				setBusy(true);
 				if (checked) {
 					await complete({
@@ -208,7 +208,7 @@ export default function App() {
 	);
 
 	//I will definitely look into framer motion further, layouts and ids need reviewing for smoother animations
-	const reorderableList = () => (
+	const renderReorderList = () => (
 		<Reorder.Group values={activeTasks} onReorder={reOrderTask}>
 			{activeTasks.map((e) => {
 				if (!e.dueDate) {
@@ -286,7 +286,7 @@ export default function App() {
 						)}
 					</AnimatePresence>
 
-					{reorderableList()}
+					{renderReorderList()}
 
 					<AnimatePresence>
 						{hasTasks && <SubHeader>Completed Tasks</SubHeader>}

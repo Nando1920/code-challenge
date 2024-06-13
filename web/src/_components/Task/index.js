@@ -9,6 +9,7 @@ export default function Task({
 	text,
 	dueDate,
 	isDragged,
+	setIsDragged,
 	onChange,
 	...props
 }) {
@@ -22,6 +23,7 @@ export default function Task({
 	const handleClick = (e) => {
 		if (isDragged) {
 			e.preventDefault();
+			setIsDragged(false);
 		}
 	};
 
