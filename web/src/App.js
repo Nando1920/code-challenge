@@ -159,22 +159,17 @@ export default function App() {
 			},
 		});
 	};
-	console.log(isDragged);
 
 	const renderTask = (t) => (
 		<Task
 			key={t.id}
 			text={t.text}
 			dueDate={t.dueDate}
-			complete={t.complete && !isDragged}
+			complete={t.complete}
 			onChange={async (checked) => {
 				if (isDragged) {
 					setIsDragged(false);
-					console.log(
-						{ checked },
-						t.complete,
-						t.complete && !isDragged
-					);
+
 					return;
 				}
 				setBusy(true);
