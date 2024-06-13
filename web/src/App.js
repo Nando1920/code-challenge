@@ -19,7 +19,6 @@ export default function App() {
 	const [hasFocus, setHasFocus] = useState(false),
 		[busy, setBusy] = useState(false),
 		[activeTasks, setActiveTasks] = useState([]),
-		[orderedTasks, setOrderedTasks] = useState([]),
 		[isDragged, setIsDragged] = useState(false);
 
 	const { data, loading, error, refetch } = useQuery(gql`
@@ -138,11 +137,13 @@ export default function App() {
 	};
 
 	const reOrderTask = (tasks) => {
-		const tasksWithDate = activeTasks.filter((e) => {
-			return e.dueDate;
+		setActiveTasks((prevActiveTasks) => {
+			const tasksWithDate = prevActiveTasks.filter((e) => {
+				return e.dueDate;
+			});
+			const newActiveTasks = [...tasksWithDate, ...tasks];
+			return newActiveTasks;
 		});
-		setActiveTasks([...tasksWithDate, ...tasks]);
-		setOrderedTasks(tasks);
 	};
 
 	const onDragStart = () => {
@@ -150,9 +151,13 @@ export default function App() {
 	};
 
 	const onDragEnd = async () => {
-		const orders = orderedTasks.map((e, index) => {
-			return { id: e.id, orderNum: index + 1 };
-		});
+		const orders = activeTasks
+			.filter((e) => {
+				return !e.dueDate;
+			})
+			.map((e, index) => {
+				return { id: e.id, orderNum: index + 1 };
+			});
 		reorder({
 			variables: { orders },
 			optimisticResponse: {
@@ -219,7 +224,7 @@ export default function App() {
 							key={e.id}
 							value={e}
 							className={cls("listItem")}
-							onDragStart={() => setIsDragged(true)}
+							onDragStart={onDragStart}
 							onDragEnd={onDragEnd}
 						>
 							{renderTask(e)}
