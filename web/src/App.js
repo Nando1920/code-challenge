@@ -206,6 +206,7 @@ export default function App() {
 		/>
 	);
 
+	//I will definitely look into framer motion further, layouts and ids need reviewing for smoother animations
 	const reorderableList = () => (
 		<Reorder.Group values={activeTasks} onReorder={reOrderTask}>
 			{activeTasks.map((e) => {
