@@ -7,7 +7,7 @@
 	padding: size(16);
 	margin-bottom: size(8);
 
-	background: #1C1C1C;
+	background: #1c1c1c;
 	border-radius: size(16);
 	cursor: pointer;
 
@@ -44,7 +44,7 @@
 	transition: background-color 0.15s ease, border-color 0.15s ease;
 
 	&::before {
-		content: '';
+		content: "";
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -85,25 +85,25 @@
 	}
 }
 
-.textContainer{
+.textContainer {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 }
 
-.dateText{
+.dateText {
 	margin-top: -8px;
 	font-size: size(14px);
 }
 
-.overdue{
+.overdue {
 	color: $overdue;
 }
 
-.upcoming{
+.upcoming {
 	color: $upcoming;
 }
 
-.soon{
+.soon {
 	color: $soon;
 }

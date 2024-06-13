@@ -19,7 +19,8 @@ export default function App() {
 	const [hasFocus, setHasFocus] = useState(false),
 		[busy, setBusy] = useState(false),
 		[activeTasks, setActiveTasks] = useState([]),
-		[orderedTasks, setOrderedTasks] = useState([]);
+		[orderedTasks, setOrderedTasks] = useState([]),
+		[isDragged, setIsDragged] = useState(false);
 
 	const { data, loading, error, refetch } = useQuery(gql`
 		query {
@@ -158,14 +159,24 @@ export default function App() {
 			},
 		});
 	};
+	console.log(isDragged);
 
 	const renderTask = (t) => (
 		<Task
 			key={t.id}
 			text={t.text}
 			dueDate={t.dueDate}
-			complete={t.complete}
+			complete={t.complete && !isDragged}
 			onChange={async (checked) => {
+				if (isDragged) {
+					setIsDragged(false);
+					console.log(
+						{ checked },
+						t.complete,
+						t.complete && !isDragged
+					);
+					return;
+				}
 				setBusy(true);
 				if (checked) {
 					await complete({
@@ -209,6 +220,7 @@ export default function App() {
 							key={e.id}
 							value={e}
 							className={cls("listItem")}
+							onDragStart={() => setIsDragged(true)}
 							onDragEnd={onDragEnd}
 						>
 							{renderTask(e)}
