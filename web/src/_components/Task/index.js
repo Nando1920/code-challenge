@@ -4,10 +4,26 @@ import { motion } from "framer-motion";
 import { isDatePast, isDueToday } from "../../_util/date";
 import { formatRelative } from "date-fns";
 
-export default function Task({ complete, text, dueDate, onChange, ...props }) {
-	const _onChange = (e) => onChange(!!e.target.checked),
-		overdue = isDatePast(dueDate),
+export default function Task({
+	complete,
+	text,
+	dueDate,
+	isDragged,
+	onChange,
+	...props
+}) {
+	const overdue = isDatePast(dueDate),
 		dueToday = isDueToday(dueDate);
+
+	const _onChange = (e) => {
+		onChange(!!e.target.checked);
+	};
+
+	const handleClick = (e) => {
+		if (isDragged) {
+			e.preventDefault();
+		}
+	};
 
 	return (
 		<motion.label
@@ -18,6 +34,7 @@ export default function Task({ complete, text, dueDate, onChange, ...props }) {
 			className={cls(css.task, {
 				[css.checked]: complete,
 			})}
+			onClick={handleClick}
 			{...props}
 		>
 			<input

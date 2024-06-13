@@ -166,6 +166,7 @@ export default function App() {
 			text={t.text}
 			dueDate={t.dueDate}
 			complete={t.complete}
+			isDragged={isDragged}
 			onChange={async (checked) => {
 				if (isDragged) {
 					setIsDragged(false);
