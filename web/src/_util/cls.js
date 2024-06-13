@@ -6,11 +6,11 @@
  * @param args
  * @return {string}
  */
-export default function cls (...args) {
+export default function cls(...args) {
 	const c = [];
 
-	args.forEach(arg => {
-		if (typeof arg !== 'object') {
+	args.forEach((arg) => {
+		if (typeof arg !== "object") {
 			c.push(arg);
 			return;
 		}
@@ -21,9 +21,8 @@ export default function cls (...args) {
 		}
 
 		for (const [key, value] of Object.entries(arg))
-			if (!!value)
-				c.push(key);
+			if (!!value) c.push(key);
 	});
 
-	return c.join(' ');
+	return c.join(" ");
 }

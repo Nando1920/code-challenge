@@ -35,7 +35,7 @@
 	border-color: #fff;
 }
 
-.iconContainer{
+.iconContainer {
 	position: absolute;
 	right: 0%;
 	top: 15%;
@@ -43,27 +43,27 @@
 	flex-direction: column;
 }
 
-.iconImg{
+.iconImg {
 	height: size(24px);
 	width: size(24px);
 	filter: grayscale(100%);
 	background-image: url(../../_svg/Calendar.svg);
 }
 
-.iconImgFocus{
+.iconImgFocus {
 	filter: brightness(100%);
 }
 
-.icon{
+.icon {
 	background-color: #1b1b1b;
 	padding: size(12);
 	border-radius: size(10);
 	fill: #5a5a5a;
-	vertical-align: middle;	
+	vertical-align: middle;
 	margin: -1px 10px 0 0;
 }
 
-.iconFocus{
+.iconFocus {
 	fill: $primary;
 	background-color: $primary-light;
 }
