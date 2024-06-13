@@ -137,7 +137,6 @@ export default function App() {
 	};
 
 	const reOrderTask = (tasks) => {
-		console.log(tasks);
 		const tasksWithDate = activeTasks.filter((e) => {
 			return e.dueDate;
 		});
@@ -203,7 +202,7 @@ export default function App() {
 
 	const reorderableList = () => (
 		<Reorder.Group values={activeTasks} onReorder={reOrderTask}>
-			{activeTasks.map((e, index) => {
+			{activeTasks.map((e) => {
 				if (!e.dueDate) {
 					return (
 						<Reorder.Item
@@ -217,7 +216,7 @@ export default function App() {
 					);
 				} else {
 					return (
-						<div key={index} className={cls("listItem")}>
+						<div key={e.id} className={cls("listItem")}>
 							{renderTask(e)}
 						</div>
 					);
