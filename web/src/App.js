@@ -213,6 +213,7 @@ export default function App() {
 					return (
 						<Reorder.Item
 							layout
+							layoutId={e.id}
 							key={e.id}
 							value={e}
 							className={cls("listItem")}
